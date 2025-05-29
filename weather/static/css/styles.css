@@ -1,0 +1,80 @@
+/* General form styling */
+.register-form {
+    width: 100%;
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Style labels */
+.register-form label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+/* Input fields */
+.register-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: 0.3s ease-in-out;
+}
+
+/* Input focus effect */
+.register-form input:focus {
+    border-color: #4CAF50;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+    outline: none;
+}
+
+/* Placeholder styling */
+.register-form input::placeholder {
+    color: #999;
+    font-size: 14px;
+}
+
+/* Password fields */
+.register-form input[type="password"] {
+    letter-spacing: 1px;
+}
+
+/* Submit button */
+.register-form button {
+    width: 100%;
+    padding: 10px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+}
+
+/* Button hover effect */
+.register-form button:hover {
+    background: #388E3C;
+}
+
+/* Error messages */
+.errorlist {
+    color: red;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+    .register-form {
+        padding: 15px;
+    }
+}

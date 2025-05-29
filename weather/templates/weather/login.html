@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App Login</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #6b73ff, #000dff);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Weather elements */
+        .weather-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: float linear infinite;
+        }
+
+        .sun {
+            position: absolute;
+            background: radial-gradient(circle, #ffde59, #ff8c00);
+            border-radius: 50%;
+            box-shadow: 0 0 50px #ff8c00;
+            animation: pulse 8s ease-in-out infinite;
+            top: 15%;
+            right: 15%;
+            width: 80px;
+            height: 80px;
+        }
+
+        @keyframes float {
+            0% { transform: translateX(0) translateY(0); }
+            50% { transform: translateX(50px) translateY(-20px); }
+            100% { transform: translateX(0) translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 50px #ff8c00; transform: scale(1); }
+            50% { box-shadow: 0 0 100px #ff8c00; transform: scale(1.05); }
+            100% { box-shadow: 0 0 50px #ff8c00; transform: scale(1); }
+        }
+
+        .rain {
+            position: absolute;
+            width: 2px;
+            height: 15px;
+            background: rgba(255, 255, 255, 0.6);
+            animation: rain linear infinite;
+        }
+
+        @keyframes rain {
+            0% { transform: translateY(-100px); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(100vh); opacity: 0; }
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
+            animation: fadeIn 1.2s ease-in-out;
+            backdrop-filter: blur(5px);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+
+        .login-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0.1),
+                rgba(255, 255, 255, 0)
+            );
+            transform: rotate(30deg);
+            pointer-events: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #2d2d2d;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            font-size: 1.8em;
+            position: relative;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 3px;
+        }
+
+        .input-group {
+            margin: 20px 0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .input-group:hover {
+            transform: translateX(5px);
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px 12px 40px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            background: #f9f9f9;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            border-color: #3a5cc9;
+            background: #fff;
+            box-shadow: 0 0 8px rgba(58, 92, 201, 0.3);
+            outline: none;
+        }
+
+        input:focus + i {
+            color: #3a5cc9;
+        }
+
+        input::placeholder {
+            color: #aaa;
+            font-style: italic;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(90deg, #3a5cc9, #2a3d8f);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            background: linear-gradient(90deg, #2a3d8f, #3a5cc9);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 50%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(30deg);
+            transition: all 0.3s ease;
+        }
+
+        button:hover::after {
+            left: 120%;
+        }
+
+        p {
+            margin-top: 20px;
+            color: #555;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        a {
+            color: #3a5cc9;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        a:hover {
+            color: #2a3d8f;
+        }
+
+        a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: #2a3d8f;
+            transition: width 0.3s ease;
+        }
+
+        a:hover::after {
+            width: 100%;
+        }
+
+        .error {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-top: 10px;
+            display: none;
+            font-style: italic;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+
+        @media (max-width: 400px) {
+            .login-container {
+                padding: 20px;
+                max-width: 90%;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            input, button {
+                font-size: 14px;
+            }
+
+            .input-group i {
+                font-size: 14px;
+            }
+        }
+
+        /* Success animation */
+        .success {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .success.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .success-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            animation: scaleIn 0.5s ease;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .success-icon {
+            font-size: 60px;
+            color: #2ecc71;
+            margin-bottom: 20px;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="weather-bg">
+        <div class="sun"></div>
+        <!-- Clouds -->
+        <div class="cloud" style="width: 100px; height: 40px; top: 20%; left: 10%; animation-duration: 30s;"></div>
+        <div class="cloud" style="width: 150px; height: 60px; top: 30%; right: 15%; animation-duration: 40s;"></div>
+        <div class="cloud" style="width: 80px; height: 30px; bottom: 25%; left: 20%; animation-duration: 35s;"></div>
+        <!-- Rain -->
+        <div id="rain-container"></div>
+    </div>
+
+    <div class="login-container">
+        <form id="login-form" onsubmit="handleSubmit(event)" aria-label="Login Form">
+            <h2><i class="fas fa-cloud-sun" style="margin-right: 10px;"></i>Weather App</h2>
+            <div class="input-group">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="email" placeholder="Email" required aria-label="Email">
+            </div>
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="password" placeholder="Password" required aria-label="Password">
+            </div>
+            <div class="error" id="error-message"></div>
+            <button type="submit"><i class="fas fa-sign-in-alt" style="margin-right: 8px;"></i>Sign In</button>
+            <p>Don't have an account? <a href="{% url 'register' %}" aria-label="Sign Up">Sign Up</a></p>
+        </form>
+    </div>
+
+    <div class="success" id="success-message">
+        <div class="success-content">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2>Login Successful!</h2>
+            <p>Welcome back to Weather App</p>
+            <p>Loading your weather dashboard...</p>
+        </div>
+    </div>
+
+    <script>
+        // Create rain effect
+        function createRain() {
+            const rainContainer = document.getElementById('rain-container');
+            rainContainer.innerHTML = '';
+            
+            for (let i = 0; i < 50; i++) {
+                const rain = document.createElement('div');
+                rain.className = 'rain';
+                rain.style.left = Math.random() * 100 + 'vw';
+                rain.style.animationDuration = (Math.random() * 0.5 + 0.5) + 's';
+                rain.style.animationDelay = Math.random() * 2 + 's';
+                rainContainer.appendChild(rain);
+            }
+        }
+
+        // Initialize rain
+        createRain();
+
+        function handleSubmit(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('error-message');
+            const successMessage = document.getElementById('success-message');
+
+            // Reset messages
+            errorMessage.style.display = 'none';
+            errorMessage.textContent = '';
+
+            // Basic validation
+            if (!email || !password) {
+                errorMessage.textContent = 'Please fill in all fields.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            // Simple email format check
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email)) {
+                errorMessage.textContent = 'Please enter a valid email address.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            // Show success animation
+            successMessage.classList.add('active');
+
+            // Redirect after delay
+            setTimeout(function() {
+                window.location.href = "/home";
+            }, 2500);
+        }
+    </script>
+</body>
+</html>

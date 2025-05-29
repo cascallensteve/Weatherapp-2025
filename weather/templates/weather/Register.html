@@ -1,0 +1,473 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - WeatherHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #1a202c, #2d3748);
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+        
+        /* Weather animations */
+        .bg-weather {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+        
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            filter: blur(20px);
+            animation: drift 30s linear infinite;
+        }
+        
+        @keyframes drift {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(150vw); }
+        }
+        
+        /* Form container */
+        .form-container {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.5s ease;
+            animation: fadeIn 1s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Form step animation */
+        .form-step {
+            display: none;
+            animation: slideIn 0.5s ease forwards;
+        }
+        
+        .form-step.active {
+            display: block;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        /* Input styles */
+        .input-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        
+        input, select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, select:focus {
+            border-color: #facc15;
+            box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        /* Progress bar */
+        .progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #facc15, #f59e0b);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        /* Step navigation */
+        .step-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-next {
+            background: #facc15;
+            color: #1a202c;
+        }
+        
+        .btn-next:hover {
+            background: #eab308;
+            transform: translateY(-2px);
+        }
+        
+        .btn-prev {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .btn-prev:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Review section */
+        .review-item {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            border-left: 3px solid #facc15;
+        }
+        
+        .review-label {
+            font-weight: 600;
+            color: #facc15;
+            margin-bottom: 0.25rem;
+        }
+        
+        /* Success animation */
+        .success-animation {
+            display: none;
+            text-align: center;
+            animation: fadeIn 1s ease;
+        }
+        
+        .success-animation i {
+            font-size: 5rem;
+            color: #facc15;
+            margin-bottom: 1rem;
+            animation: bounce 1s ease infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+            .form-container {
+                padding: 1.5rem;
+                margin: 1rem;
+                width: 90%;
+            }
+            
+            .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body class="text-white min-h-screen flex flex-col relative">
+    <!-- Weather-inspired background animation -->
+    <div class="bg-weather">
+        <div class="cloud" style="width: 200px; height: 60px; top: 20%; left: -200px; animation-duration: 25s;"></div>
+        <div class="cloud" style="width: 150px; height: 50px; top: 50%; left: -150px; animation-duration: 35s; animation-delay: 10s;"></div>
+        <div class="cloud" style="width: 180px; height: 55px; top: 80%; left: -180px; animation-duration: 28s; animation-delay: 5s;"></div>
+    </div>
+
+    <!-- Registration Form -->
+    <div class="flex items-center justify-center flex-grow py-8">
+        <div class="form-container p-8 rounded-lg w-full max-w-md z-10">
+            <h2 class="text-3xl font-bold text-center mb-2 text-white">Join WeatherHub</h2>
+            <p class="text-center text-gray-300 mb-6">Create your account to access weather forecasts</p>
+            
+            <!-- Progress bar -->
+            <div class="progress-bar">
+                <div class="progress" id="progress-bar"></div>
+            </div>
+            
+            <form method="post" enctype="multipart/form-data" id="registration-form">
+                {% csrf_token %}
+                
+                <!-- Step 1: Basic Info -->
+                <div class="form-step active" id="step1">
+                    <div class="input-group">
+                        <label for="id_username">Username</label>
+                        <input type="text" name="username" id="id_username" class="w-full p-3 rounded-lg" required 
+                               placeholder="Enter your username" autocomplete="username">
+                    </div>
+                    <div class="input-group">
+                        <label for="id_email">Email</label>
+                        <input type="email" name="email" id="id_email" class="w-full p-3 rounded-lg" required 
+                               placeholder="Enter your email" autocomplete="email">
+                    </div>
+                    <div class="step-nav">
+                        <button type="button" class="btn btn-next w-full" onclick="nextStep(1, 2)">Continue <i class="fas fa-arrow-right ml-2"></i></button>
+                    </div>
+                </div>
+                
+                <!-- Step 2: Password -->
+                <div class="form-step" id="step2">
+                    <div class="input-group">
+                        <label for="id_password1">Password</label>
+                        <input type="password" name="password1" id="id_password1" class="w-full p-3 rounded-lg" required 
+                               placeholder="Create a password">
+                        <p class="text-xs text-gray-400 mt-1">Minimum 8 characters with numbers and letters</p>
+                    </div>
+                    <div class="input-group">
+                        <label for="id_password2">Confirm Password</label>
+                        <input type="password" name="password2" id="id_password2" class="w-full p-3 rounded-lg" required 
+                               placeholder="Confirm your password">
+                    </div>
+                    <div class="step-nav">
+                        <button type="button" class="btn btn-prev" onclick="prevStep(2, 1)"><i class="fas fa-arrow-left mr-2"></i> Back</button>
+                        <button type="button" class="btn btn-next" onclick="nextStep(2, 3)">Continue <i class="fas fa-arrow-right ml-2"></i></button>
+                    </div>
+                </div>
+                
+                <!-- Step 3: Personal Details -->
+                <div class="form-step" id="step3">
+                    <div class="input-group">
+                        <label for="id_first_name">First Name</label>
+                        <input type="text" name="first_name" id="id_first_name" class="w-full p-3 rounded-lg" 
+                               placeholder="Your first name">
+                    </div>
+                    <div class="input-group">
+                        <label for="id_last_name">Last Name</label>
+                        <input type="text" name="last_name" id="id_last_name" class="w-full p-3 rounded-lg" 
+                               placeholder="Your last name">
+                    </div>
+                    <div class="input-group">
+                        <label for="id_location">Location (for weather)</label>
+                        <input type="text" name="location" id="id_location" class="w-full p-3 rounded-lg" 
+                               placeholder="City, Country">
+                    </div>
+                    <div class="step-nav">
+                        <button type="button" class="btn btn-prev" onclick="prevStep(3, 2)"><i class="fas fa-arrow-left mr-2"></i> Back</button>
+                        <button type="button" class="btn btn-next" onclick="nextStep(3, 4)">Continue <i class="fas fa-arrow-right ml-2"></i></button>
+                    </div>
+                </div>
+                
+                <!-- Step 4: Profile Picture -->
+                <div class="form-step" id="step4">
+                    <div class="input-group">
+                        <label for="id_profile_picture">Profile Picture (Optional)</label>
+                        <input type="file" name="profile_picture" id="id_profile_picture" class="w-full p-2 rounded-lg" 
+                               accept="image/*">
+                        <div class="preview mt-4 hidden" id="image-preview">
+                            <img id="preview-image" src="#" alt="Preview" class="w-24 h-24 rounded-full object-cover border-2 border-yellow-400">
+                        </div>
+                    </div>
+                    <div class="step-nav">
+                        <button type="button" class="btn btn-prev" onclick="prevStep(4, 3)"><i class="fas fa-arrow-left mr-2"></i> Back</button>
+                        <button type="button" class="btn btn-next" onclick="nextStep(4, 5)">Review <i class="fas fa-search ml-2"></i></button>
+                    </div>
+                </div>
+                
+                <!-- Step 5: Review -->
+                <div class="form-step" id="step5">
+                    <h3 class="text-xl font-bold mb-4 text-yellow-400"><i class="fas fa-check-circle mr-2"></i>Review Your Information</h3>
+                    
+                    <div class="review-item">
+                        <div class="review-label">Account Details</div>
+                        <div id="review-username"></div>
+                        <div id="review-email"></div>
+                    </div>
+                    
+                    <div class="review-item">
+                        <div class="review-label">Personal Information</div>
+                        <div id="review-name"></div>
+                        <div id="review-location"></div>
+                    </div>
+                    
+                    <div class="review-item" id="review-picture-container" style="display: none;">
+                        <div class="review-label">Profile Picture</div>
+                        <div id="review-picture"></div>
+                    </div>
+                    
+                    <div class="step-nav mt-6">
+                        <button type="button" class="btn btn-prev" onclick="prevStep(5, 4)"><i class="fas fa-edit mr-2"></i> Edit</button>
+                        <button type="submit" class="btn btn-next bg-green-500 hover:bg-green-600"><i class="fas fa-user-plus mr-2"></i> Complete Registration</button>
+                    </div>
+                </div>
+                
+                <!-- Success Message (hidden initially) -->
+                <div class="success-animation" id="success-message">
+                    <i class="fas fa-check-circle"></i>
+                    <h3 class="text-2xl font-bold mb-2">Registration Complete!</h3>
+                    <p class="text-gray-300">Welcome to WeatherHub</p>
+                    <p class="text-sm text-gray-400 mt-4">Redirecting to your dashboard...</p>
+                </div>
+            </form>
+            
+            <p class="mt-6 text-center text-gray-300">
+                Already have an account? <a href="{% url 'login' %}" class="text-yellow-400 hover:underline">Sign In</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Form steps navigation
+        function nextStep(current, next) {
+            // Validate current step before proceeding
+            if (current === 1 && !validateStep1()) return;
+            if (current === 2 && !validateStep2()) return;
+            
+            document.getElementById(`step${current}`).classList.remove('active');
+            document.getElementById(`step${next}`).classList.add('active');
+            updateProgressBar(next);
+            
+            // Special handling for review step
+            if (next === 5) {
+                prepareReview();
+            }
+        }
+        
+        function prevStep(current, prev) {
+            document.getElementById(`step${current}`).classList.remove('active');
+            document.getElementById(`step${prev}`).classList.add('active');
+            updateProgressBar(prev);
+        }
+        
+        function updateProgressBar(step) {
+            const percentage = ((step - 1) / 4) * 100;
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
+        }
+        
+        // Step validation
+        function validateStep1() {
+            const username = document.getElementById('id_username').value;
+            const email = document.getElementById('id_email').value;
+            
+            if (!username || !email) {
+                alert('Please fill in all fields');
+                return false;
+            }
+            
+            // Simple email validation
+            if (!email.includes('@') || !email.includes('.')) {
+                alert('Please enter a valid email address');
+                return false;
+            }
+            
+            return true;
+        }
+        
+        function validateStep2() {
+            const pass1 = document.getElementById('id_password1').value;
+            const pass2 = document.getElementById('id_password2').value;
+            
+            if (!pass1 || !pass2) {
+                alert('Please fill in both password fields');
+                return false;
+            }
+            
+            if (pass1 !== pass2) {
+                alert('Passwords do not match');
+                return false;
+            }
+            
+            if (pass1.length < 8) {
+                alert('Password must be at least 8 characters');
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // Image preview
+        document.getElementById('id_profile_picture').addEventListener('change', function(e) {
+            const preview = document.getElementById('image-preview');
+            const previewImage = document.getElementById('preview-image');
+            
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    preview.classList.remove('hidden');
+                }
+                
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+        
+        // Prepare review data
+        function prepareReview() {
+            document.getElementById('review-username').innerHTML = 
+                `<strong>Username:</strong> ${document.getElementById('id_username').value}`;
+                
+            document.getElementById('review-email').innerHTML = 
+                `<strong>Email:</strong> ${document.getElementById('id_email').value}`;
+                
+            const firstName = document.getElementById('id_first_name').value;
+            const lastName = document.getElementById('id_last_name').value;
+            if (firstName || lastName) {
+                document.getElementById('review-name').innerHTML = 
+                    `<strong>Name:</strong> ${firstName} ${lastName}`;
+            } else {
+                document.getElementById('review-name').innerHTML = 
+                    `<strong>Name:</strong> Not provided`;
+            }
+            
+            const location = document.getElementById('id_location').value;
+            document.getElementById('review-location').innerHTML = 
+                `<strong>Location:</strong> ${location || 'Not provided'}`;
+                
+            // Handle profile picture preview in review
+            const fileInput = document.getElementById('id_profile_picture');
+            if (fileInput.files && fileInput.files[0]) {
+                document.getElementById('review-picture').innerHTML = 
+                    `<img src="${URL.createObjectURL(fileInput.files[0])}" alt="Profile Preview" 
+                      class="w-16 h-16 rounded-full object-cover border border-yellow-400">`;
+                document.getElementById('review-picture-container').style.display = 'block';
+            } else {
+                document.getElementById('review-picture-container').style.display = 'none';
+            }
+        }
+        
+        // Form submission (simulated)
+        document.getElementById('registration-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show success animation
+            document.getElementById('step5').classList.remove('active');
+            document.getElementById('success-message').style.display = 'block';
+            
+            // Simulate form submission
+            setTimeout(() => {
+                // In a real app, this would be the actual form submission
+                this.submit();
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
